@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "tgSchedule": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
