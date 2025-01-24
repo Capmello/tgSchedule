@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tgSchedule", "tgSchedule\tgSchedule.csproj", "{42E4214D-672D-4E40-8AAF-B10ED8D6317C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tgSchedule.UnitTests", "tgSchedule.UnitTests\tgSchedule.UnitTests.csproj", "{84FF0440-EADD-4B2F-BA0A-6C0F52D8B512}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeTableProvider", "TimeTableProvider\TimeTableProvider.csproj", "{3D302C3C-B44B-41E7-90A0-C9C6460BD349}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{84FF0440-EADD-4B2F-BA0A-6C0F52D8B512}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84FF0440-EADD-4B2F-BA0A-6C0F52D8B512}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84FF0440-EADD-4B2F-BA0A-6C0F52D8B512}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D302C3C-B44B-41E7-90A0-C9C6460BD349}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D302C3C-B44B-41E7-90A0-C9C6460BD349}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D302C3C-B44B-41E7-90A0-C9C6460BD349}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D302C3C-B44B-41E7-90A0-C9C6460BD349}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
