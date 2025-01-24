@@ -11,7 +11,8 @@
         public async Task GetTimetable()
         {
 
-            await _timetableClient.LoginAsync();
+            var authCookie = await _timetableClient.LoginAsync();
+            await _timetableClient.GetTimeTable(authCookie.Value);
         }
     }
 }
