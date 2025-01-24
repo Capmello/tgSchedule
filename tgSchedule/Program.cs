@@ -24,6 +24,8 @@ serviceCollection.AddTransient<SchedulerWorker>();
 serviceCollection.AddTransient<TimeTableProvider.TimeTableProvider>();
 serviceCollection.AddTransient<TimetableClient>();
 serviceCollection.Configure<TimeTableSection>(config.GetSection(TimeTableSection.SectionName));
+serviceCollection.AddHttpClient().ConfigureHttpClientDefaults(b =>
+                 b.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler() { UseCookies = false, AllowAutoRedirect = false }));
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -39,5 +41,5 @@ using (var server = new BackgroundJobServer(options))
 
 void ScheduleReccuringTasks(IRecurringJobManager recurringJobManager)
 {
-    recurringJobManager.AddOrUpdate<SchedulerWorker>("ScheduleUpdate", sw => sw.DoWork(), "* * * * * *");
+    recurringJobManager.AddOrUpdate<SchedulerWorker>("ScheduleUpdate", sw => sw.DoWork(), Cron.Minutely);
 }
