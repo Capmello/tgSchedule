@@ -41,5 +41,5 @@ using (var server = new BackgroundJobServer(options))
 
 void ScheduleReccuringTasks(IRecurringJobManager recurringJobManager)
 {
-    recurringJobManager.AddOrUpdate<SchedulerWorker>("ScheduleUpdate", sw => sw.DoWork(), Cron.Minutely);
+    recurringJobManager.AddOrUpdate<SchedulerWorker>("ScheduleUpdate", sw => sw.DoWork(), "*/5 * * * *");
 }

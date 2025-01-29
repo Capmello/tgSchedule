@@ -1,5 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net;
 
@@ -9,17 +8,15 @@ namespace TimeTableProvider
     {
         private readonly TimeTableSection _config;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<TimetableClient> _logger;
         private const string CSRFTokenName = "csrftoken";
         private const string SessionIdName = "sessionid";
         private const string ExpiresName = "expires";
         private static Maybe<AuthData> _authDataOrNothing = Maybe<AuthData>.None;
 
-        public TimetableClient(IOptions<TimeTableSection> config, IHttpClientFactory httpClientFactory, ILogger<TimetableClient> logger)
+        public TimetableClient(IOptions<TimeTableSection> config, IHttpClientFactory httpClientFactory)
         {
             _config = config.Value;
             _httpClientFactory = httpClientFactory;
-            _logger = logger;
         }
 
         internal async Task<Result<string>> LoginAsync()
