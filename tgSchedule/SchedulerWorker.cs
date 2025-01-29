@@ -6,7 +6,7 @@ namespace tgSchedule
     {
         private readonly ILogger<SchedulerWorker> _logger;
         private readonly TimeTableProvider.TimeTableProvider _timeTableProvider;
-
+       
         public SchedulerWorker(ILogger<SchedulerWorker> logger, TimeTableProvider.TimeTableProvider timeTableProvider)
         {
             _logger = logger;
@@ -15,7 +15,12 @@ namespace tgSchedule
 
         public async Task DoWork()
         {
-            /*var result = */await _timeTableProvider.GetTimetable();
+            var now = DateTime.Now;
+            int days = now.DayOfWeek - DayOfWeek.Monday;
+            var currentWeekStartDate = now.AddDays(-days);
+            var weeks = new[] { currentWeekStartDate, currentWeekStartDate.AddDays(7) };
+            /*var result = */
+            await _timeTableProvider.GetTimetable(weeks);
             
             
             //get schedule

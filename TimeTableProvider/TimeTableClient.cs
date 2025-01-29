@@ -1,7 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Globalization;
 using System.Net;
 
 namespace TimeTableProvider
@@ -70,18 +69,22 @@ namespace TimeTableProvider
             }
         }
 
-        internal async Task GetTimeTable(string authCookie)
+        internal async Task<Result<string>> GetTimeTable(string authCookie, DateTime startWeekDate)
         {
             using (var httpClient = _httpClientFactory.CreateClient())
             {
-                var requestMessage = new HttpRequestMessage(HttpMethod.Get, _config.TimetableUrl);
+                var currentWeekUrl = string.Format(_config.TimetableUrl, startWeekDate.ToString("yyyy-MM-dd"));
+                var requestMessage = new HttpRequestMessage(HttpMethod.Get, currentWeekUrl);
                 requestMessage.Headers.Add("Cookie", authCookie);
                 var timeTablePageResponse = await httpClient.SendAsync(requestMessage);
                 if (!timeTablePageResponse.IsSuccessStatusCode)
                 {
-                    //TODO: return cannot login
+                    return Result.Failure<string>("Cannot get timetable");
                 }
+
                 var timeTableResponse = await timeTablePageResponse.Content.ReadAsStringAsync();
+
+                return timeTableResponse;
             }
         }
 
