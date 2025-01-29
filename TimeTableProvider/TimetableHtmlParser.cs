@@ -6,23 +6,21 @@ namespace TimeTableProvider
 {
     public sealed class TimetableHtmlParser
     {
-        internal static Result<List<Timesheet>> ParseTimeTable(string html)
+        internal static List<Result<Timesheet>> ParseTimeTable(string html)
         {
+            var result = new List<Result<Timesheet>>();
             var tableNodesResult = GetTableNodes(html);
 
             if (tableNodesResult.IsFailure)
-                return Result.Failure<List<Timesheet>>(tableNodesResult.Error);
+                return new List<Result<Timesheet>> { Result.Failure<Timesheet>(tableNodesResult.Error) };
+
 
             var tableNodes = tableNodesResult.Value;
-            var result = new List<Timesheet>();
 
             foreach (var tableNode in tableNodes)
             {
                 var timesheetResult = ConvertTableToTimesheet(tableNode);
-                if (timesheetResult.IsFailure)
-                    return Result.Failure<List<Timesheet>>(timesheetResult.Error);
-
-                result.Add(timesheetResult.Value);
+                result.Add(timesheetResult);
             }
             return result;
         }

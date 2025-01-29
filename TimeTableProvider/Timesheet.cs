@@ -23,7 +23,7 @@ namespace TimeTableProvider
             if (LessonsOrNothing.HasNoValue)
                 LessonsOrNothing = new List<Lesson>();
 
-            if (LessonsOrNothing.Value.Any(l => l.Name == lesson.Name && l.Order == lesson.Order))
+            if (LessonsOrNothing.Value.Any(l => l.Name == lesson.Name && l.Number == lesson.Number))
                 return Result.Failure("Cannot add duplicate lesson");
 
             LessonsOrNothing.Value.Add(lesson);
