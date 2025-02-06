@@ -6,14 +6,14 @@ namespace TimeTableProvider
 {
     public sealed class TimetableClient
     {
-        private readonly TimeTableSection _config;
+        private readonly TimeTableOptions _config;
         private readonly IHttpClientFactory _httpClientFactory;
         private const string CSRFTokenName = "csrftoken";
         private const string SessionIdName = "sessionid";
         private const string ExpiresName = "expires";
         private static Maybe<AuthData> _authDataOrNothing = Maybe<AuthData>.None;
 
-        public TimetableClient(IOptions<TimeTableSection> config, IHttpClientFactory httpClientFactory)
+        public TimetableClient(IOptions<TimeTableOptions> config, IHttpClientFactory httpClientFactory)
         {
             _config = config.Value;
             _httpClientFactory = httpClientFactory;

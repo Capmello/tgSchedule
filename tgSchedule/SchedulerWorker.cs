@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CSharpFunctionalExtensions;
+using GoogleProvider;
+using Microsoft.Extensions.Logging;
 using System.Text;
 using TimeTableProvider;
 
@@ -8,29 +10,72 @@ namespace tgSchedule
     {
         private readonly ILogger<SchedulerWorker> _logger;
         private readonly TimeTableProvider.TimeTableProvider _timeTableProvider;
+        private readonly CalendarClient _calendarClient;
 
-        public SchedulerWorker(ILogger<SchedulerWorker> logger, TimeTableProvider.TimeTableProvider timeTableProvider)
+        public SchedulerWorker(
+            ILogger<SchedulerWorker> logger, TimeTableProvider.TimeTableProvider timeTableProvider, CalendarClient calendarClient)
         {
             _logger = logger;
             _timeTableProvider = timeTableProvider;
+            _calendarClient = calendarClient;
         }
 
         public async Task DoWork()
         {
-            var now = DateTime.Now;
-            int days = now.DayOfWeek - DayOfWeek.Monday;
-            var currentWeekStartDate = now.AddDays(-days);
-            var weeks = new[] { currentWeekStartDate, currentWeekStartDate.AddDays(7) };
+            var startDate = DateTime.Now;
+            var endDate = startDate.Date.AddDays(14);
 
-            var timeTableResults = await _timeTableProvider.GetTimetables(weeks);
+            var timesheets = await GetTimesheet(startDate, endDate);
+            var getEventsResult = await _calendarClient.GetEvents(startDate, endDate);
+
             var sb = new StringBuilder();
-            foreach (var result in timeTableResults)
+
+            var events = getEventsResult.Value;
+            var eSb = new StringBuilder();
+            foreach (var ev in events)
             {
-                if (result.IsFailure)
-                    sb.AppendLine(result.Error);
+                var str = $"Start Time: {ev.Start.DateTimeDateTimeOffset}, Description: {ev.Description}, Summary: {ev.Summary}, Location {ev.Location}";
+                sb.AppendLine(str);
+            }
+
+            _logger.LogInformation(eSb.ToString());
+            var lessonsToUpdate = new List<Google.Apis.Calendar.v3.Data.Event>();
+
+
+            foreach (var timesheet in timesheets)
+            {
+                var dtTimesheet = timesheet.Date;
+                if (timesheet.LessonsOrNothing.HasValue)
+                {
+                    var correspondingEvents = events.Where(e => e.Start.DateTimeDateTimeOffset.HasValue && e.Start.DateTimeDateTimeOffset.Value.DateTime.Date == dtTimesheet).ToArray();
+                    foreach (var lesson in timesheet.LessonsOrNothing.Value)
+                    {
+                        var lessonEvent = correspondingEvents.FirstOrDefault(e => string.Equals(e.Summary, lesson.Name, StringComparison.OrdinalIgnoreCase));
+                        if (lessonEvent != null && string.IsNullOrEmpty(lessonEvent.Location) && !string.IsNullOrWhiteSpace(lesson.HomeWork))
+                        {
+                            lessonEvent.Location = lesson.HomeWork;
+                            lessonsToUpdate.Add(lessonEvent);
+                        }
+                    }
+
+                }
+
+            }
+            await _calendarClient.UpdateEvent(lessonsToUpdate);
+
+        }
+
+        private async Task<IReadOnlyCollection<Timesheet>> GetTimesheet(DateTime startDate, DateTime endDate)
+        {
+            var timeTableResults = await _timeTableProvider.GetTimetables(startDate, endDate);
+            var sb = new StringBuilder();
+            foreach (var timeTableResult in timeTableResults)
+            {
+                if (timeTableResult.IsFailure)
+                    sb.AppendLine(timeTableResult.Error);
                 else
                 {
-                    var timeTable = result.Value;
+                    var timeTable = timeTableResult.Value;
                     sb.AppendLine(timeTable.Date.ToShortDateString());
                     if (timeTable.LessonsOrNothing.HasValue)
                     {
@@ -49,8 +94,9 @@ namespace tgSchedule
             }
             _logger.LogInformation(sb.ToString());
 
-            //get schedule
-            //if ok try to update google calendar
+            var result = timeTableResults.Where(t => t.IsSuccess).Select(t => t.Value).ToList();
+
+            return result;
         }
     }
 }

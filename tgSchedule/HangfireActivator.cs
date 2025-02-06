@@ -1,4 +1,5 @@
 ﻿using Hangfire;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace tgSchedule
 {
@@ -13,7 +14,7 @@ namespace tgSchedule
 
         public override object ActivateJob(Type type)
         {
-            return _serviceProvider.GetService(type);
+            return _serviceProvider.GetRequiredService(type);
         }
     }
 }

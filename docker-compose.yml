@@ -1,0 +1,6 @@
+services:
+  tgschedule:
+    image: ${DOCKER_REGISTRY-}tgschedule
+    build:
+      context: .
+      dockerfile: tgSchedule/Dockerfile   
