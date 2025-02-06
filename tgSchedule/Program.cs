@@ -1,4 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using GoogleProvider;
 using Hangfire;
 using Hangfire.InMemory;
 using Microsoft.Extensions.Configuration;
@@ -23,7 +24,10 @@ serviceCollection.AddHangfire(config =>
 serviceCollection.AddTransient<SchedulerWorker>();
 serviceCollection.AddTransient<TimeTableProvider.TimeTableProvider>();
 serviceCollection.AddTransient<TimetableClient>();
-serviceCollection.Configure<TimeTableSection>(config.GetSection(TimeTableSection.SectionName));
+serviceCollection.AddTransient<CalendarClient>();
+serviceCollection.Configure<TimeTableOptions>(config.GetRequiredSection(TimeTableOptions.SectionName));
+serviceCollection.Configure<GoogleProviderOptions>(config.GetRequiredSection(GoogleProviderOptions.SectionName));
+
 serviceCollection.AddHttpClient().ConfigureHttpClientDefaults(b =>
                  b.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler() { UseCookies = false, AllowAutoRedirect = false }));
 
@@ -41,5 +45,5 @@ using (var server = new BackgroundJobServer(options))
 
 void ScheduleReccuringTasks(IRecurringJobManager recurringJobManager)
 {
-    recurringJobManager.AddOrUpdate<SchedulerWorker>("ScheduleUpdate", sw => sw.DoWork(), "*/5 * * * *");
+    recurringJobManager.AddOrUpdate<SchedulerWorker>("ScheduleUpdate", sw => sw.DoWork(), "*/1 * * * *");
 }
