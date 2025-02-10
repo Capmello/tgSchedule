@@ -38,7 +38,7 @@ ScheduleReccuringTasks(serviceProvider.GetRequiredService<IRecurringJobManager>(
 var options = new BackgroundJobServerOptions { SchedulePollingInterval = new TimeSpan(0, 0, 1), WorkerCount = 1 };
 using (var server = new BackgroundJobServer(options))
 {
-    Console.ReadLine();
+    await Task.Delay(Timeout.Infinite);
 }
 
 

@@ -25,13 +25,17 @@ namespace tgSchedule
             var startDate = DateTime.Now;
             var endDate = startDate.Date.AddDays(14);
 
-            var timesheets = await GetTimesheet(startDate, endDate);
-            var getEventsResult = await _calendarClient.GetEvents(startDate, endDate);
+            var timesheetTask = GetTimesheet(startDate, endDate);
+            var calendarEventsTask = _calendarClient.GetEvents(startDate, endDate);
+
+            await Task.WhenAll(timesheetTask, calendarEventsTask);
+
+            var events = calendarEventsTask.Result.Value;
+            var timesheets = timesheetTask.Result;
 
             var sb = new StringBuilder();
-
-            var events = getEventsResult.Value;
             var eSb = new StringBuilder();
+
             foreach (var ev in events)
             {
                 var str = $"Start Time: {ev.Start.DateTimeDateTimeOffset}, Description: {ev.Description}, Summary: {ev.Summary}, Location {ev.Location}";
