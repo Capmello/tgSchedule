@@ -27,7 +27,7 @@ namespace TimeTableProvider
                 var timeTableHtmlResult = await _timetableClient.GetTimeTable(authCookie, weekStartDate);
                 if (timeTableHtmlResult.IsFailure)
                 {
-                    result.Add(Result.Failure<Timesheet>(authCookieResult.Error));
+                    result.Add(Result.Failure<Timesheet>(timeTableHtmlResult.Error));
                     continue;
                 }
 

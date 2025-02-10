@@ -83,7 +83,9 @@ namespace GoogleProvider
 
         private Result<CalendarService> CreateCalendarService()
         {
-            var filePath = _config.GoogleServiceAccountJsonPath;
+            var currentDirectory = AppContext.BaseDirectory;
+            var filename = _config.GoogleServiceAccountFileName;
+            var filePath = Path.Combine(currentDirectory, filename);
             if (!File.Exists(filePath))
                 return Result.Failure<CalendarService>($"File not found. File path: '{filePath}'");
 
