@@ -55,8 +55,14 @@ namespace tgSchedule
                     foreach (var lesson in timesheet.LessonsOrNothing.Value)
                     {
                         var lessonEvent = correspondingEvents.FirstOrDefault(e => string.Equals(e.Summary, lesson.Name, StringComparison.OrdinalIgnoreCase));
-                        if (lessonEvent != null && string.IsNullOrEmpty(lessonEvent.Location) && !string.IsNullOrWhiteSpace(lesson.HomeWork))
+                        if (lessonEvent != null && !string.IsNullOrWhiteSpace(lesson.HomeWork))
                         {
+                            var resultHomeWork = string.Empty;
+                            var existingLocation = lessonEvent.Location;
+                            if (!string.IsNullOrEmpty(existingLocation) && !string.Equals(existingLocation, lesson.HomeWork, StringComparison.OrdinalIgnoreCase))
+                                resultHomeWork += existingLocation + Environment.NewLine;
+
+                            resultHomeWork += lesson.HomeWork;
                             lessonEvent.Location = lesson.HomeWork;
                             lessonsToUpdate.Add(lessonEvent);
                         }
