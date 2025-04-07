@@ -57,13 +57,20 @@ namespace tgSchedule
                         var lessonEvent = correspondingEvents.FirstOrDefault(e => string.Equals(e.Summary, lesson.Name, StringComparison.OrdinalIgnoreCase));
                         if (lessonEvent != null && !string.IsNullOrWhiteSpace(lesson.HomeWork))
                         {
-                            var resultHomeWork = string.Empty;
-                            var existingLocation = lessonEvent.Location;
-                            if (!string.IsNullOrEmpty(existingLocation) && !string.Equals(existingLocation, lesson.HomeWork, StringComparison.OrdinalIgnoreCase))
-                                resultHomeWork += existingLocation + Environment.NewLine;
+                            var homeWork = lesson.HomeWork;
+                            var existingLocation = lessonEvent.Location ?? string.Empty;
+                            //TODO after update never will be the same. Necessary to use contain or end with.
+                            var isSame = !string.IsNullOrEmpty(existingLocation) && string.Equals(existingLocation, homeWork, StringComparison.OrdinalIgnoreCase);
+                            if (isSame)
+                                continue;
 
-                            resultHomeWork += lesson.HomeWork;
-                            lessonEvent.Location = lesson.HomeWork;
+                            if (existingLocation.EndsWith(homeWork))
+                                continue;
+
+                            if (!string.IsNullOrEmpty(existingLocation))
+                                homeWork = $"{existingLocation}|{homeWork}";
+
+                            lessonEvent.Location = homeWork;
                             lessonsToUpdate.Add(lessonEvent);
                         }
                     }
